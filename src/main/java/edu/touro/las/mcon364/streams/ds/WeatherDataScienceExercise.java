@@ -3,70 +3,99 @@ import java.nio.file.*;
 import java.util.*;
 import java.util.stream.*;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.util.*;
+
+
 public class WeatherDataScienceExercise {
 
     record WeatherRecord(
-        String stationId,
-        String city,
-        String date,
-        double temperatureC,
-        int humidity,
-        double precipitationMm
+            String stationId,
+            String city,
+            String date,
+            double temperatureC,
+            int humidity,
+            double precipitationMm
     ) {}
 
     public static void main(String[] args) throws Exception {
-        List<String> rows = Files.readAllLines(Path.of("noaa_weather_sample.csv"));
+        List<String> rows = Files.readAllLines(Path.of("noaa_weather_sample_200_rows.csv"));
 
         List<WeatherRecord> cleaned = rows.stream()
-            .skip(1)
-            .map(WeatherDataScienceExercise::parseRow)
-            .flatMap(Optional::stream)
-            .filter(WeatherDataScienceExercise::isValid)
-            .toList();
+                .skip(1) // skip header
+                .map(WeatherDataScienceExercise::parseRow)
+                .flatMap(Optional::stream)
+                .filter(WeatherDataScienceExercise::isValid)
+                .toList();
 
-        System.out.println("Cleaned data:");
-        cleaned.forEach(System.out::println);
+        System.out.println("Total raw rows (excluding header): " + (rows.size() - 1));
+        System.out.println("Total cleaned rows: " + cleaned.size());
 
-        double avgTemp = cleaned.stream()
-            .mapToDouble(WeatherRecord::temperatureC)
-            .average()
-            .orElse(0);
+        // TODO 1:
+        // Count how many valid weather records remain after cleaning.
 
-        System.out.println("\nAverage temperature: " + avgTemp);
+        // TODO 2:
+        // Compute the average temperature across all valid rows.
 
-        Map<String, Double> avgByCity = cleaned.stream()
-            .collect(Collectors.groupingBy(
-                WeatherRecord::city,
-                Collectors.averagingDouble(WeatherRecord::temperatureC)
-            ));
+        // TODO 3:
+        // Find the city with the highest average temperature.
 
-        System.out.println("\nAverage temp by city:");
-        avgByCity.forEach((c, v) -> System.out.println(c + ": " + v));
+        // TODO 4:
+        // Group records by city.
+
+        // TODO 5:
+        // Compute average precipitation by city.
+
+        // TODO 6:
+        // Partition rows into freezing days (temperature <= 0)
+        // and non-freezing days (temperature > 0).
+
+        // TODO 7:
+        // Create a Set<String> of all distinct cities.
+
+        // TODO 8:
+        // Find the wettest single day.
+
+        // TODO 9:
+        // Create a Map<String, Double> from city to average humidity.
+
+        // TODO 10:
+        // Produce a list of formatted strings like:
+        // "Miami on 2025-01-02: 25.1C, humidity 82%"
+
+        // TODO 11 (optional):
+        // Build a Map<String, CityWeatherSummary> for all cities.
+
+        // Put your code below these comments or refactor into helper methods.
     }
 
     static Optional<WeatherRecord> parseRow(String row) {
-        String[] parts = row.split(",");
-        if (parts.length != 6) return Optional.empty();
+        // TODO:
+        // 1. Split the row by commas
+        // 2. Reject malformed rows
+        // 3. Reject rows with missing temperature
+        // 4. Parse numeric values safely
+        // 5. Return Optional.empty() if parsing fails
 
-        try {
-            if (parts[3].isBlank()) return Optional.empty();
-
-            return Optional.of(new WeatherRecord(
-                parts[0],
-                parts[1],
-                parts[2],
-                Double.parseDouble(parts[3]),
-                Integer.parseInt(parts[4]),
-                Double.parseDouble(parts[5])
-            ));
-        } catch (Exception e) {
-            return Optional.empty();
-        }
+        throw new UnsupportedOperationException("TODO: implement parseRow");
     }
 
     static boolean isValid(WeatherRecord r) {
-        return r.temperatureC() >= -60 && r.temperatureC() <= 60
-            && r.humidity() >= 0 && r.humidity() <= 100
-            && r.precipitationMm() >= 0;
+        // TODO:
+        // Keep only rows where:
+        // - temperature is between -60 and 60
+        // - humidity is between 0 and 100
+        // - precipitation is >= 0
+
+        throw new UnsupportedOperationException("TODO: implement isValid");
     }
+
+    record CityWeatherSummary(
+            String city,
+            long dayCount,
+            double avgTemp,
+            double avgPrecipitation,
+            double maxTemp
+    ) {}
 }
