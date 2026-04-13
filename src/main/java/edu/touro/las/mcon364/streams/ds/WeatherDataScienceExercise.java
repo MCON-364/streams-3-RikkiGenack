@@ -45,6 +45,7 @@ public class WeatherDataScienceExercise {
 
         // TODO 5:
         // Compute average precipitation by city.
+        cleaned.stream().collect(Collectors.groupingBy(WeatherRecord::city,  Collectors.averagingDouble(WeatherRecord::temperatureC)));
 
         // TODO 6:
         // Partition rows into freezing days (temperature <= 0)
@@ -55,14 +56,13 @@ public class WeatherDataScienceExercise {
 
         // TODO 8:
         // Find the wettest single day.
-
+        //cleaned.stream().map(WeatherRecord::precipitationMm).sorted().
         // TODO 9:
         // Create a Map<String, Double> from city to average humidity.
 
         // TODO 10:
         // Produce a list of formatted strings like:
         // "Miami on 2025-01-02: 25.1C, humidity 82%"
-
         // TODO 11 (optional):
         // Build a Map<String, CityWeatherSummary> for all cities.
 
@@ -76,8 +76,26 @@ public class WeatherDataScienceExercise {
         // 3. Reject rows with missing temperature
         // 4. Parse numeric values safely
         // 5. Return Optional.empty() if parsing fails
+        if (row ==null || row.isEmpty()) {
+            return Optional.empty();
+        }
+        String[] splitted = row.split(", ");
+        if (splitted.length != 6) {
+            return Optional.empty();
+        }
+        try {
+            String stationId = splitted[0];
+            String city = splitted[1];
+            String date = splitted[2];
+            double temperatureC = Double.parseDouble(splitted[3]);
+            int humidity = Integer.parseInt(splitted[4]);
+            double precipitationMm = Double.parseDouble(splitted[5]);
+            return Optional.of(new WeatherRecord
+                    (stationId, city, date, temperatureC, humidity, precipitationMm));
+        } catch(NumberFormatException e) {
+            return Optional.empty();
+        }
 
-        throw new UnsupportedOperationException("TODO: implement parseRow");
     }
 
     static boolean isValid(WeatherRecord r) {
@@ -86,8 +104,10 @@ public class WeatherDataScienceExercise {
         // - temperature is between -60 and 60
         // - humidity is between 0 and 100
         // - precipitation is >= 0
-
-        throw new UnsupportedOperationException("TODO: implement isValid");
+        if (r.temperatureC>-59 && r.temperatureC<61 && r.humidity>0 && r.humidity <100 && (r.precipitationMm>0  || r.precipitationMm==0)) {
+            return true;
+        }
+        return false;
     }
 
     record CityWeatherSummary(
