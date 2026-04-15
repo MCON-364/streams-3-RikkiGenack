@@ -92,17 +92,17 @@ public class WeatherDataScienceExercise {
         if (row ==null || row.isEmpty()) {
             return Optional.empty();
         }
-        String[] splitted = row.split(", ");
+        String[] splitted = row.split(",");
         if (splitted.length != 6) {
             return Optional.empty();
         }
         try {
-            String stationId = splitted[0];
-            String city = splitted[1];
-            String date = splitted[2];
-            double temperatureC = Double.parseDouble(splitted[3]);
-            int humidity = Integer.parseInt(splitted[4]);
-            double precipitationMm = Double.parseDouble(splitted[5]);
+            String stationId = splitted[0].trim();
+            String city = splitted[1].trim();
+            String date = splitted[2].trim();
+            double temperatureC = Double.parseDouble(splitted[3].trim());
+            int humidity = Integer.parseInt(splitted[4].trim());
+            double precipitationMm = Double.parseDouble(splitted[5].trim());
             return Optional.of(new WeatherRecord
                     (stationId, city, date, temperatureC, humidity, precipitationMm));
         } catch(NumberFormatException e) {
@@ -117,8 +117,7 @@ public class WeatherDataScienceExercise {
         // - temperature is between -60 and 60
         // - humidity is between 0 and 100
         // - precipitation is >= 0
-        if (r.temperatureC>=-60 && r.temperatureC<=60 && r.humidity>0 && r.humidity <100
-                && (r.precipitationMm>0  || r.precipitationMm==0)) {
+        if (r.temperatureC>=-60 && r.temperatureC<=60 && r.humidity>=0 && r.humidity<=100 && r.precipitationMm>=0) {
             return true;
         }
         return false;
